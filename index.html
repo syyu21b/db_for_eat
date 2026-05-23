@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>동아시아 미식 생태계 분석 대시보드</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,400..900&display=swap" rel="stylesheet" />
+
+  <style>
+    @font-face {
+      font-family: "Pretendard";
+      src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff") format("woff");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --font-ko: "Pretendard", system-ui, sans-serif;
+      --font-en: "Google Sans Flex", "Google Sans", Arial, sans-serif;
+
+      --krds-primary: #003675;
+      --krds-primary-2: #0050a8;
+      --krds-primary-3: #256ef4;
+      --krds-secondary: #edf5ff;
+      --krds-bg: #f7f8fa;
+      --krds-surface: #ffffff;
+      --krds-surface-alt: #f4f6f8;
+      --krds-text: #1d1d1d;
+      --krds-text-subtle: #555555;
+      --krds-text-muted: #717171;
+      --krds-border: #d8dde5;
+      --krds-border-strong: #b1b8c0;
+      --krds-focus: #246beb;
+      --krds-success: #008a1e;
+
+      --korea: #d50136;
+      --china: #b25c00;
+      --japan: #0050a8;
+      --green: #008a1e;
+      --shadow-sm: 0 2px 10px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 14px 34px rgba(15, 23, 42, 0.10);
+      --shadow-lg: 0 26px 70px rgba(15, 23, 42, 0.16);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-ko);
+      color: var(--krds-text);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(37, 110, 244, 0.12), transparent 28%),
+        radial-gradient(circle at 90% 8%, rgba(0, 54, 117, 0.10), transparent 26%),
+        linear-gradient(180deg, #ffffff 0%, var(--krds-bg) 42%, #eef3f8 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      word-break: keep-all;
+    }
+
+    [lang="en"],
+    .en {
+      font-family: var(--font-en);
+      letter-spacing: -0.012em;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 54, 117, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 54, 117, 0.045) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.75), transparent 72%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--krds-focus);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 16px;
+      top: -80px;
+      z-index: 999;
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: var(--krds-primary);
+      color: #fff;
+      font-weight: 800;
+      transition: top 0.2s ease;
+    }
+
+    .skip-link:focus {
+      top: 16px;
+    }
+
+    .page {
+      width: min(1200px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 24px 0 80px;
+    }
+
+    .nav {
+      position: sticky;
+      top: 16px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 14px 16px;
+      margin-bottom: 50px;
+      border: 1px solid rgba(216, 221, 229, 0.92);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--krds-primary);
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -0.035em;
+      white-space: nowrap;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--krds-primary), var(--krds-primary-3));
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(0, 54, 117, 0.22);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      padding: 10px 14px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      color: var(--krds-text-subtle);
+      transition: 0.2s ease;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .nav-links a:hover {
+      color: var(--krds-primary);
+      border-color: var(--krds-border);
+      background: var(--krds-secondary);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      align-items: center;
+      gap: 36px;
+      margin-bottom: 32px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border: 1px solid #c7d9f6;
+      border-radius: 999px;
+      color: var(--krds-primary);
+      background: var(--krds-secondary);
+      margin-bottom: 20px;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--krds-success);
+      box-shadow: 0 0 0 7px rgba(0, 138, 30, 0.12);
+    }
+
+    h1 {
+      font-size: clamp(40px, 6.6vw, 76px);
+      line-height: 1.02;
+      letter-spacing: -0.075em;
+      max-width: 850px;
+      margin-bottom: 24px;
+      color: var(--krds-text);
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, var(--krds-primary), var(--krds-primary-3));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      color: var(--krds-text-subtle);
+      font-size: 18px;
+      line-height: 1.8;
+      max-width: 690px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .btn {
+      min-height: 48px;
+      border-radius: 10px;
+      padding: 0 18px;
+      color: var(--krds-primary);
+      font-weight: 900;
+      cursor: pointer;
+      transition: 0.2s ease;
+      background: var(--krds-surface);
+      border: 1px solid var(--krds-border-strong);
+    }
+
+    .btn.primary {
+      color: #fff;
+      background: var(--krds-primary);
+      border-color: var(--krds-primary);
+      box-shadow: 0 14px 28px rgba(0, 54, 117, 0.22);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn.primary:hover {
+      background: var(--krds-primary-2);
+    }
+
+    .orbit-card {
+      position: relative;
+      min-height: 470px;
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.98), rgba(244, 248, 255, 0.92)),
+        radial-gradient(circle at top right, rgba(37, 110, 244, 0.12), transparent 42%);
+      border: 1px solid var(--krds-border);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+
+    .orbit-card::before {
+      content: "";
+      position: absolute;
+      width: 520px;
+      height: 520px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 54, 117, 0.12);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .orbit-card::after {
+      content: "";
+      position: absolute;
+      width: 330px;
+      height: 330px;
+      border-radius: 50%;
+      border: 1px dashed rgba(0, 54, 117, 0.20);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: spin 18s linear infinite;
+    }
+
+    .center-dish {
+      position: absolute;
+      inset: 50% auto auto 50%;
+      width: 190px;
+      height: 190px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      background: linear-gradient(135deg, var(--krds-primary), var(--krds-primary-3));
+      color: #fff;
+      border: 10px solid #eaf2ff;
+      box-shadow: 0 26px 56px rgba(0, 54, 117, 0.22);
+      z-index: 2;
+      font-weight: 900;
+      letter-spacing: -0.045em;
+      font-size: 24px;
+    }
+
+    .floating-node {
+      position: absolute;
+      z-index: 3;
+      max-width: 260px;
+      padding: 16px;
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid var(--krds-border);
+      box-shadow: var(--shadow-md);
+      animation: float 5s ease-in-out infinite;
+    }
+
+    .floating-node strong {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    .floating-node span {
+      color: var(--krds-text-subtle);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .node-korea { top: 48px; left: 46px; border-left: 6px solid var(--korea); }
+    .node-china { right: 34px; top: 154px; border-left: 6px solid var(--china); animation-delay: -1.4s; }
+    .node-japan { left: 60px; bottom: 58px; border-left: 6px solid var(--japan); animation-delay: -2.6s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes spin {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .section {
+      margin-top: 40px;
+      scroll-margin-top: 110px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .section h2 {
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.12;
+      letter-spacing: -0.06em;
+      color: var(--krds-text);
+    }
+
+    .section-head p {
+      color: var(--krds-text-subtle);
+      line-height: 1.7;
+      max-width: 560px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .metric,
+    .platform-card,
+    .country-summary,
+    .restaurant-zone,
+    .map-card,
+    .insight,
+    .footer {
+      background: var(--krds-surface);
+      border: 1px solid var(--krds-border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .metric {
+      padding: 22px;
+      border-radius: var(--radius-lg);
+      min-height: 150px;
+      transition: 0.2s ease;
+    }
+
+    .metric:hover,
+    .platform-card:hover,
+    .restaurant-card:hover,
+    .insight:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .metric .num {
+      font-family: var(--font-en);
+      color: var(--krds-primary);
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      margin-bottom: 8px;
+    }
+
+    .metric .label {
+      color: var(--krds-text-subtle);
+      line-height: 1.6;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .platforms {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .platform-card {
+      position: relative;
+      overflow: hidden;
+      padding: 24px;
+      border-radius: var(--radius-lg);
+      min-height: 270px;
+      transition: 0.2s ease;
+    }
+
+    .platform-card::before {
+      content: "";
+      position: absolute;
+      top: -72px;
+      right: -72px;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.16;
+    }
+
+    .platform-card small {
+      color: var(--krds-primary);
+      font-weight: 900;
+    }
+
+    .platform-card h3 {
+      font-size: 23px;
+      letter-spacing: -0.045em;
+      margin: 8px 0 16px;
+    }
+
+    .platform-card dl {
+      display: grid;
+      gap: 12px;
+      font-size: 15px;
+      color: var(--krds-text-subtle);
+      line-height: 1.55;
+    }
+
+    .platform-card dt {
+      color: var(--krds-text);
+      font-weight: 900;
+      margin-bottom: 3px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .tab {
+      min-height: 44px;
+      padding: 0 17px;
+      border-radius: 999px;
+      border: 1px solid var(--krds-border-strong);
+      background: #fff;
+      color: var(--krds-text-subtle);
+      cursor: pointer;
+      font-weight: 900;
+      transition: 0.2s ease;
+    }
+
+    .tab:hover {
+      color: var(--krds-primary);
+      background: var(--krds-secondary);
+    }
+
+    .tab.active {
+      color: #fff;
+      background: var(--active-color);
+      border-color: var(--active-color);
+    }
+
+    .country-panel {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .country-summary,
+    .restaurant-zone {
+      border-radius: var(--radius-xl);
+    }
+
+    .country-summary {
+      padding: 28px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .country-summary::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      right: -100px;
+      bottom: -100px;
+      background: var(--country-color);
+      opacity: 0.10;
+    }
+
+    .country-label {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--country-color);
+      font-weight: 900;
+      margin-bottom: 18px;
+    }
+
+    .country-summary h3 {
+      font-size: 35px;
+      line-height: 1.08;
+      letter-spacing: -0.055em;
+      margin-bottom: 16px;
+      color: var(--krds-text);
+    }
+
+    .country-summary p {
+      color: var(--krds-text-subtle);
+      line-height: 1.8;
+      margin-bottom: 22px;
+    }
+
+    .trend-list {
+      display: grid;
+      gap: 14px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .trend-item {
+      background: var(--krds-surface-alt);
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--krds-border);
+    }
+
+    .trend-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 14px;
+      color: var(--krds-text-subtle);
+      margin-bottom: 9px;
+    }
+
+    .trend-meta b {
+      color: var(--krds-text);
+      font-weight: 900;
+    }
+
+    .bar {
+      height: 10px;
+      border-radius: 999px;
+      background: #e6eaf0;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      width: var(--value);
+      border-radius: 999px;
+      background: var(--country-color);
+    }
+
+    .restaurant-zone {
+      padding: 18px;
+    }
+
+    .filter-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .search {
+      flex: 1;
+      min-width: 220px;
+      min-height: 48px;
+      padding: 0 16px;
+      border-radius: 10px;
+      border: 1px solid var(--krds-border-strong);
+      background: #fff;
+      color: var(--krds-text);
+      outline: none;
+      font-weight: 650;
+    }
+
+    .search::placeholder {
+      color: var(--krds-text-muted);
+    }
+
+    .restaurant-list {
+      display: grid;
+      gap: 12px;
+      max-height: 584px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .restaurant-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .restaurant-list::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: #c4ccd6;
+    }
+
+    .restaurant-card {
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid var(--krds-border);
+      padding: 18px;
+      transition: 0.2s ease;
+    }
+
+    .restaurant-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .restaurant-card h4 {
+      font-size: 20px;
+      letter-spacing: -0.04em;
+      margin-bottom: 5px;
+    }
+
+    .restaurant-card .meta {
+      color: var(--krds-text-muted);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .badge {
+      flex: 0 0 auto;
+      height: fit-content;
+      border-radius: 999px;
+      padding: 7px 10px;
+      color: #fff;
+      background: var(--country-color);
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    .restaurant-card p {
+      color: var(--krds-text-subtle);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 13px;
+    }
+
+    .tag {
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: var(--krds-primary);
+      background: var(--krds-secondary);
+      border: 1px solid #c7d9f6;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .map-card {
+      min-height: 340px;
+      position: relative;
+      padding: 24px;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+    }
+
+    .map-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(135deg, transparent, rgba(255,255,255,0.5)),
+        radial-gradient(circle at 82% 18%, var(--map-color), transparent 34%);
+      opacity: 0.92;
+    }
+
+    .map-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .map-card h3 {
+      font-size: 30px;
+      letter-spacing: -0.055em;
+      margin-bottom: 12px;
+    }
+
+    .map-card p {
+      color: var(--krds-text-subtle);
+      line-height: 1.75;
+      margin-bottom: 18px;
+    }
+
+    .city-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .city {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 13px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.86);
+      border: 1px solid var(--krds-border);
+      color: var(--krds-text-subtle);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .city b {
+      color: var(--krds-text);
+      white-space: nowrap;
+    }
+
+    .insights {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .insight {
+      padding: 24px;
+      border-radius: var(--radius-xl);
+      min-height: 260px;
+      transition: 0.2s ease;
+    }
+
+    .insight .icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background: var(--krds-secondary);
+      color: var(--krds-primary);
+      margin-bottom: 18px;
+      font-size: 24px;
+    }
+
+    .insight h3 {
+      font-size: 23px;
+      letter-spacing: -0.05em;
+      margin-bottom: 12px;
+    }
+
+    .insight p {
+      color: var(--krds-text-subtle);
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    .footer {
+      margin-top: 36px;
+      padding: 28px;
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      color: var(--krds-text-subtle);
+      background:
+        linear-gradient(135deg, rgba(237, 245, 255, 0.86), rgba(255,255,255,0.96)),
+        #fff;
+    }
+
+    .footer strong {
+      display: block;
+      color: var(--krds-primary);
+      font-size: 20px;
+      margin-bottom: 5px;
+      letter-spacing: -0.04em;
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: 0.7s ease;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .country-panel,
+      .map-grid,
+      .insights {
+        grid-template-columns: 1fr;
+      }
+
+      .platforms,
+      .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .section-head {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .orbit-card {
+        min-height: 390px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 24px, 1200px);
+        padding-top: 12px;
+      }
+
+      .nav {
+        position: static;
+        align-items: start;
+        flex-direction: column;
+        border-radius: 18px;
+        margin-bottom: 36px;
+      }
+
+      .platforms,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .orbit-card {
+        min-height: 330px;
+      }
+
+      .center-dish {
+        width: 142px;
+        height: 142px;
+        font-size: 18px;
+      }
+
+      .floating-node {
+        padding: 12px;
+        max-width: 210px;
+      }
+
+      .node-korea { top: 28px; left: 20px; }
+      .node-china { right: 16px; top: 122px; }
+      .node-japan { left: 28px; bottom: 36px; }
+
+      .restaurant-top,
+      .city,
+      .footer {
+        flex-direction: column;
+        align-items: start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">본문 바로가기</a>
+
+  <main class="page" id="main-content">
+    <nav class="nav" aria-label="주요 메뉴">
+      <a href="#top" class="brand" aria-label="홈으로 이동">
+        <span class="logo" aria-hidden="true">🍽️</span>
+        <span><span lang="en">East Asia Gastronomy</span></span>
+      </a>
+      <div class="nav-links">
+        <a href="#platforms">평가 플랫폼</a>
+        <a href="#countries">국가별 분석</a>
+        <a href="#map">미식 거점</a>
+        <a href="#insights">시사점</a>
+      </div>
+    </nav>
+
+    <section class="hero fade-up" id="top">
+      <div>
+        <div class="eyebrow"><span class="pulse" aria-hidden="true"></span> 한·중·일 미식 생태계 분석 보고서</div>
+        <h1><span class="gradient-text">초국가적 미식 벨트</span><br />데이터 시각화 대시보드</h1>
+        <p>
+          대한민국, 중국, 일본의 현대 미식 트렌드와 평가 플랫폼, 대표 레스토랑을 한 화면에서 비교합니다.
+          전통 헤리티지, 로컬 식재료, 파인 다이닝, 대중 평가 시스템을 중심으로 동아시아 미식 생태계의 구조를 시각적으로 정리했습니다.
+        </p>
+        <div class="hero-actions">
+          <button class="btn primary" type="button" onclick="document.querySelector('#countries').scrollIntoView({behavior:'smooth'})">국가별 맛집 보기</button>
+          <button class="btn" type="button" onclick="document.querySelector('#platforms').scrollIntoView({behavior:'smooth'})">평가 체계 비교</button>
+        </div>
+      </div>
+
+      <div class="orbit-card" aria-label="한국 중국 일본 미식 생태계 시각화">
+        <div class="center-dish"><span lang="en">Gastronomy<br />Belt</span></div>
+        <div class="floating-node node-korea">
+          <strong>🇰🇷 <span lang="en">Korea</span></strong>
+          <span><span lang="en">Modern Hansik</span> · 노포 · 부산 확장</span>
+        </div>
+        <div class="floating-node node-china">
+          <strong>🇨🇳 <span lang="en">China</span></strong>
+          <span>지역주의 · 흑진주 · 몰입형 다이닝</span>
+        </div>
+        <div class="floating-node node-japan">
+          <strong>🇯🇵 <span lang="en">Japan</span></strong>
+          <span>쇼쿠닌 · 스시 · 클래식 프렌치</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section fade-up" aria-label="핵심 지표">
+      <div class="grid-4">
+        <article class="metric">
+          <div class="num">3</div>
+          <div class="label">대한민국·중국·일본<br />동아시아 핵심 미식 국가</div>
+        </article>
+        <article class="metric">
+          <div class="num">4</div>
+          <div class="label">미쉐린·블루리본·흑진주·타베로그<br />주요 평가 플랫폼</div>
+        </article>
+        <article class="metric">
+          <div class="num">15</div>
+          <div class="label">국가별 대표 레스토랑<br /><span lang="en">TOP 5</span> × 3개국</div>
+        </article>
+        <article class="metric">
+          <div class="num">3</div>
+          <div class="label">보고서 핵심 시사점<br />헤리티지·식재료·평가 주체성</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section fade-up" id="platforms">
+      <div class="section-head">
+        <h2>미식 평가 플랫폼 비교</h2>
+        <p>동아시아 미식 생태계는 글로벌 권위와 로컬 소비자 데이터가 함께 작동합니다. 각 플랫폼은 평가 주체와 기준이 달라 서로 다른 미식 지형을 만들어냅니다.</p>
+      </div>
+      <div class="platforms" id="platformCards"></div>
+    </section>
+
+    <section class="section fade-up" id="countries">
+      <div class="section-head">
+        <h2>국가별 미식 동향 & 대표 맛집</h2>
+        <p>탭을 선택하면 국가별 트렌드, 성장 키워드, 대표 레스토랑 <span lang="en">TOP 5</span>가 바뀝니다. 검색창으로 음식점명, 도시, 키워드를 빠르게 필터링할 수 있습니다.</p>
+      </div>
+      <div class="tabs" id="tabs" role="tablist" aria-label="국가 선택"></div>
+      <div class="country-panel" id="countryPanel"></div>
+    </section>
+
+    <section class="section fade-up" id="map">
+      <div class="section-head">
+        <h2>동아시아 미식 거점 지도</h2>
+        <p>서울·부산, 베이징·상하이·광저우, 도쿄·교토·후쿠오카는 각국의 대표적인 미식 도시로, 전통과 현대 파인 다이닝이 동시에 성장하는 축입니다.</p>
+      </div>
+      <div class="map-grid">
+        <article class="map-card" style="--map-color: rgba(213, 1, 54, 0.12)">
+          <h3>대한민국</h3>
+          <p>컨템퍼러리 한식의 고도화와 부산 미식 거점화가 동시에 진행됩니다.</p>
+          <div class="city-list">
+            <div class="city"><b>서울</b><span>밍글스 · 이문설농탕 · 하동관</span></div>
+            <div class="city"><b>부산</b><span>해운대 암소갈비집 · 피오또</span></div>
+          </div>
+        </article>
+        <article class="map-card" style="--map-color: rgba(178, 92, 0, 0.13)">
+          <h3>중국</h3>
+          <p>광둥·쓰촨·타이저우·상하이 혁신 다이닝이 지역성과 예술성을 확장합니다.</p>
+          <div class="city-list">
+            <div class="city"><b>베이징</b><span>신롱지 · 대동 카오야 · <span lang="en">1996 Sichuan</span></span></div>
+            <div class="city"><b>상하이</b><span>울트라바이올렛</span></div>
+            <div class="city"><b>광저우</b><span><span lang="en">Jiang by Chef Fei</span></span></div>
+          </div>
+        </article>
+        <article class="map-card" style="--map-color: rgba(0, 80, 168, 0.13)">
+          <h3>일본</h3>
+          <p>쇼쿠닌 장인정신과 프렌치 파인 다이닝의 정밀한 변주가 공존합니다.</p>
+          <div class="city-list">
+            <div class="city"><b>도쿄</b><span>세잔 · 스시 스기타 · 렌가테이</span></div>
+            <div class="city"><b>교토</b><span>고다이지 주규안</span></div>
+            <div class="city"><b>후쿠오카</b><span>스시 사카이</span></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section fade-up" id="insights">
+      <div class="section-head">
+        <h2>종합 시사점</h2>
+        <p>보고서의 결론은 미식이 단순 외식 산업을 넘어 문화 외교, 지역 경제, 도시 브랜딩의 자산으로 확장되고 있다는 점입니다.</p>
+      </div>
+      <div class="insights">
+        <article class="insight">
+          <div class="icon" aria-hidden="true">🌱</div>
+          <h3>전통 헤리티지의 현대적 부가가치</h3>
+          <p>밍글스, 신롱지, 스시 스기타는 각국의 역사적·지역적 뿌리를 현대적인 프리미엄 가치로 치환한 대표 사례입니다.</p>
+        </article>
+        <article class="insight">
+          <div class="icon" aria-hidden="true">🧂</div>
+          <h3>식재료와 산지 중심 미식</h3>
+          <p>최상위 다이닝일수록 기술적 기교보다 계절성, 생산자, 산지의 독보적 품질을 핵심 경쟁력으로 삼습니다.</p>
+        </article>
+        <article class="insight">
+          <div class="icon" aria-hidden="true">📊</div>
+          <h3>로컬 평가 주체성 강화</h3>
+          <p>블루리본, 흑진주, 타베로그처럼 자국민의 입맛과 소비 데이터를 반영한 평가 체계가 시장 영향력을 넓히고 있습니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <footer class="footer fade-up">
+      <div>
+        <strong><span lang="en">East Asia Gastronomy Intelligence</span></strong>
+        <span>한·중·일 미식 생태계와 대표 레스토랑을 시각화한 인터랙티브 웹페이지</span>
+      </div>
+      <button class="btn" type="button" onclick="window.scrollTo({top:0, behavior:'smooth'})">맨 위로</button>
+    </footer>
+  </main>
+
+  <script>
+    const platforms = [
+      {
+        name: "미쉐린 가이드",
+        country: "글로벌",
+        scale: "1~3 스타 / 빕 구르망",
+        actor: "전문 암행 심사관",
+        point: "요리 기술, 식재료 질, 창의성 중심의 글로벌 표준",
+        color: "#003675"
+      },
+      {
+        name: "블루리본 서베이",
+        country: "대한민국",
+        scale: "1~3 리본",
+        actor: "일반 독자 평가단 및 전문가",
+        point: "한국인 입맛과 대중성을 반영한 국내형 맛집 가이드",
+        color: "#d50136"
+      },
+      {
+        name: "흑진주 식당 가이드",
+        country: "중국",
+        scale: "1~3 다이아몬드",
+        actor: "메이투안-디엔핑 및 업계 전문가",
+        point: "중국 고유 미식 기준과 지역 요리의 주체적 정립",
+        color: "#b25c00"
+      },
+      {
+        name: "타베로그 어워드",
+        country: "일본",
+        scale: "골드 · 실버 · 브론즈",
+        actor: "실제 이용 고객 평가",
+        point: "대중 평판과 고신뢰 이용자 리뷰 기반의 평가 체계",
+        color: "#0050a8"
+      }
+    ];
+
+    const countries = {
+      korea: {
+        tab: "🇰🇷 대한민국",
+        title: "Modern Hansik & Local Heritage",
+        label: "대한민국",
+        color: "#d50136",
+        summary: "전통 한식의 현대적 재해석과 로컬 미식 거점의 성장이 핵심입니다. 한류의 확산과 함께 컨템퍼러리 한식, 사찰 음식, 발효 문화, 노포 보존, 부산 미식 도시화가 동시에 부각됩니다.",
+        trends: [
+          ["컨템퍼러리 한식", 94],
+          ["발효·장 문화 재해석", 88],
+          ["부산 로컬 미식 확장", 76],
+          ["역사적 노포 보존", 82]
+        ],
+        restaurants: [
+          {
+            name: "밍글스 Mingles",
+            city: "서울 강남",
+            type: "컨템퍼러리 한식",
+            badge: "3스타",
+            desc: "강민구 셰프가 이끄는 한국 파인 다이닝의 대표 주자. 장, 초 등 전통 발효 기법과 현대 조리 기술을 결합합니다.",
+            tags: ["발효", "모던 한식", "파인 다이닝"]
+          },
+          {
+            name: "해운대 암소갈비집",
+            city: "부산 해운대",
+            type: "바비큐 / 한식",
+            badge: "노포",
+            desc: "1964년 창업한 부산 대표 갈비 노포. 다이아몬드 칼집 암소갈비와 감자 사리로 상징성이 큽니다.",
+            tags: ["부산", "갈비", "지역 명소"]
+          },
+          {
+            name: "피오또 Fiotto",
+            city: "부산 해운대",
+            type: "이탈리아식 / 지속가능성",
+            badge: "그린 스타",
+            desc: "셰프 부부가 직접 농사지은 유기농 농산물과 현지 식재료를 활용하는 지속가능 미식 레스토랑입니다.",
+            tags: ["지속가능성", "파스타", "로컬 식재료"]
+          },
+          {
+            name: "이문설농탕",
+            city: "서울 종로",
+            type: "설렁탕",
+            badge: "1904",
+            desc: "한국 외식 산업의 역사성을 상징하는 설렁탕 노포. 맑고 슴슴한 국물과 전통 방식을 유지합니다.",
+            tags: ["백년가게", "노포", "설렁탕"]
+          },
+          {
+            name: "하동관",
+            city: "서울 명동",
+            type: "곰탕",
+            badge: "1939",
+            desc: "놋그릇과 토렴 방식으로 알려진 곰탕 전문점. 서울식 한우 곰탕의 전통을 이어갑니다.",
+            tags: ["곰탕", "명동", "토렴"]
+          }
+        ]
+      },
+      china: {
+        tab: "🇨🇳 중국",
+        title: "Regional Pride & Immersive Fine Dining",
+        label: "중국",
+        color: "#b25c00",
+        summary: "광둥, 쓰촨, 상하이, 타이저우 등 방대한 지역주의 요리가 핵심 기반입니다. 흑진주 가이드를 통해 지역 정통성이 재조명되고, 상하이와 베이징에서는 예술적·기술적 파인 다이닝이 강세를 보입니다.",
+        trends: [
+          ["지역 요리 정체성", 96],
+          ["흑진주 가이드 영향력", 86],
+          ["몰입형 예술 다이닝", 78],
+          ["고급 중식 현대화", 90]
+        ],
+        restaurants: [
+          {
+            name: "신롱지 Xin Rong Ji",
+            city: "베이징 / 상하이",
+            type: "타이저우·저강 요리",
+            badge: "3스타+3다이아",
+            desc: "중국 본토 요리 브랜드 중 최고 수준의 위상을 지닌 파인 다이닝 그룹. 해산물과 절제된 중식 기법이 강점입니다.",
+            tags: ["타이저우", "해산물", "흑진주"]
+          },
+          {
+            name: "울트라바이올렛 Ultraviolet",
+            city: "상하이",
+            type: "혁신 다이닝",
+            badge: "3스타",
+            desc: "하루 10명의 고객을 대상으로 스크린, 조명, 음악, 향을 결합하는 멀티센서리 레스토랑입니다.",
+            tags: ["몰입형", "상하이", "아트 다이닝"]
+          },
+          {
+            name: "대동 카오야 Da Dong",
+            city: "베이징",
+            type: "베이징 덕",
+            badge: "1스타",
+            desc: "전통 베이징 오리구이를 현대적으로 해석한 브랜드. 바삭한 껍질과 낮은 기름감, 예술적 플레이팅이 특징입니다.",
+            tags: ["카오야", "베이징", "현대화"]
+          },
+          {
+            name: "Jiang by Chef Fei",
+            city: "광저우",
+            type: "광둥 요리",
+            badge: "2스타",
+            desc: "정통 광둥식 딤섬과 해산물을 세련되게 변주하는 광저우 대표 고급 레스토랑입니다.",
+            tags: ["광둥", "딤섬", "해산물"]
+          },
+          {
+            name: "1996 쓰촨 브래스리",
+            city: "베이징",
+            type: "쓰촨 요리",
+            badge: "미쉐린 등재",
+            desc: "강한 매운맛을 넘어 향신료의 레이어와 섬세한 코스 구성을 보여주는 고급 쓰촨 레스토랑입니다.",
+            tags: ["쓰촨", "향신료", "코스"]
+          }
+        ]
+      },
+      japan: {
+        tab: "🇯🇵 일본",
+        title: "Shokunin Craft & Precision Dining",
+        label: "일본",
+        color: "#0050a8",
+        summary: "스시, 텐푸라, 카이세키 등 한 분야에 평생을 헌신하는 쇼쿠닌 문화가 미식 생태계의 핵심입니다. 전통 일식뿐 아니라 일본 식재료와 정통 프렌치가 결합한 세계 최정상급 파인 다이닝도 성장했습니다.",
+        trends: [
+          ["쇼쿠닌 장인정신", 98],
+          ["스시 오마카세", 92],
+          ["프렌치의 일본적 변주", 84],
+          ["사용자 평판 기반 신뢰", 88]
+        ],
+        restaurants: [
+          {
+            name: "세잔 SÉZANNE",
+            city: "도쿄 마루노우치",
+            type: "클래식 프렌치",
+            badge: "3스타",
+            desc: "포시즌스 호텔 도쿄에 위치한 프렌치 파인 다이닝. 일본 제철 식재료와 정통 프랑스 기법을 결합합니다.",
+            tags: ["프렌치", "도쿄", "제철 식재료"]
+          },
+          {
+            name: "스시 스기타 Sushi Sugita",
+            city: "도쿄",
+            type: "스시 오마카세",
+            badge: "타베로그 골드",
+            desc: "온도감 있는 샤리와 전통 에도마에 숙성 기법으로 전 세계 미식가에게 높은 평가를 받는 스시야입니다.",
+            tags: ["스시", "에도마에", "오마카세"]
+          },
+          {
+            name: "고다이지 주규안 Kodaiji Jugyuan",
+            city: "교토",
+            type: "카이세키",
+            badge: "전통 가옥",
+            desc: "고다이지 인근의 전통 가옥에서 사계절 정원과 함께 정통 카이세키를 경험할 수 있는 레스토랑입니다.",
+            tags: ["교토", "카이세키", "정원"]
+          },
+          {
+            name: "스시 사카이 Sushi Sakai",
+            city: "후쿠오카",
+            type: "스시 오마카세",
+            badge: "규슈 대표",
+            desc: "겐카이나다 어패류와 독자적 숙성 노하우, 붉은 식초 샤리로 규슈 스시의 정점을 보여줍니다.",
+            tags: ["후쿠오카", "스시", "붉은 식초"]
+          },
+          {
+            name: "렌가테이 Rengatei",
+            city: "도쿄 긴자",
+            type: "요쇼쿠 / 경양식",
+            badge: "1895",
+            desc: "돈카츠와 오므라이스의 역사적 출발점으로 알려진 일본식 서양요리 노포입니다.",
+            tags: ["요쇼쿠", "긴자", "노포"]
+          }
+        ]
+      }
+    };
+
+    const platformCards = document.querySelector('#platformCards');
+    const tabs = document.querySelector('#tabs');
+    const countryPanel = document.querySelector('#countryPanel');
+    let activeCountry = 'korea';
+
+    function escapeHTML(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function mixedFont(value) {
+      return escapeHTML(value).replace(/([A-Za-zÀ-ž0-9][A-Za-zÀ-ž0-9 &+./-]*[A-Za-zÀ-ž0-9]|[A-Za-zÀ-ž0-9])/g, '<span lang="en">$1</span>');
+    }
+
+    function renderPlatforms() {
+      platformCards.innerHTML = platforms.map(item => `
+        <article class="platform-card" style="--accent:${item.color}">
+          <small>${mixedFont(item.country)}</small>
+          <h3>${mixedFont(item.name)}</h3>
+          <dl>
+            <div><dt>평가 척도</dt><dd>${mixedFont(item.scale)}</dd></div>
+            <div><dt>평가 주체</dt><dd>${mixedFont(item.actor)}</dd></div>
+            <div><dt>핵심 특징</dt><dd>${mixedFont(item.point)}</dd></div>
+          </dl>
+        </article>
+      `).join('');
+    }
+
+    function renderTabs() {
+      tabs.innerHTML = Object.entries(countries).map(([key, item]) => `
+        <button class="tab ${key === activeCountry ? 'active' : ''}" role="tab" aria-selected="${key === activeCountry}" style="--active-color:${item.color}" onclick="setCountry('${key}')">${mixedFont(item.tab)}</button>
+      `).join('');
+    }
+
+    function restaurantCard(item, color) {
+      return `
+        <article class="restaurant-card" style="--country-color:${color}">
+          <div class="restaurant-top">
+            <div>
+              <h4>${mixedFont(item.name)}</h4>
+              <div class="meta">${mixedFont(item.city)} · ${mixedFont(item.type)}</div>
+            </div>
+            <span class="badge">${mixedFont(item.badge)}</span>
+          </div>
+          <p>${mixedFont(item.desc)}</p>
+          <div class="tags">${item.tags.map(tag => `<span class="tag">#${mixedFont(tag)}</span>`).join('')}</div>
+        </article>
+      `;
+    }
+
+    function renderCountry(filter = '') {
+      const item = countries[activeCountry];
+      const keyword = filter.trim().toLowerCase();
+      const list = item.restaurants.filter(r => {
+        const haystack = `${r.name} ${r.city} ${r.type} ${r.desc} ${r.tags.join(' ')}`.toLowerCase();
+        return haystack.includes(keyword);
+      });
+
+      countryPanel.style.setProperty('--country-color', item.color);
+      countryPanel.innerHTML = `
+        <aside class="country-summary" style="--country-color:${item.color}">
+          <span class="country-label">${mixedFont(item.label)}</span>
+          <h3>${mixedFont(item.title)}</h3>
+          <p>${mixedFont(item.summary)}</p>
+          <div class="trend-list">
+            ${item.trends.map(([name, value]) => `
+              <div class="trend-item">
+                <div class="trend-meta"><b>${mixedFont(name)}</b><span lang="en">${value}%</span></div>
+                <div class="bar"><span style="--value:${value}%; --country-color:${item.color}"></span></div>
+              </div>
+            `).join('')}
+          </div>
+        </aside>
+        <section class="restaurant-zone">
+          <div class="filter-row">
+            <input class="search" type="search" aria-label="대표 맛집 검색" placeholder="맛집명, 도시, 키워드 검색" value="${escapeHTML(filter)}" oninput="renderCountry(this.value)" />
+            <button class="btn" type="button" onclick="renderCountry('')">검색 초기화</button>
+          </div>
+          <div class="restaurant-list">
+            ${list.length ? list.map(r => restaurantCard(r, item.color)).join('') : `<article class="restaurant-card"><h4>검색 결과 없음</h4><p>다른 키워드로 검색해 주세요.</p></article>`}
+          </div>
+        </section>
+      `;
+    }
+
+    function setCountry(key) {
+      activeCountry = key;
+      renderTabs();
+      renderCountry();
+    }
+
+    function revealOnScroll() {
+      document.querySelectorAll('.fade-up').forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 80) el.classList.add('visible');
+      });
+    }
+
+    renderPlatforms();
+    renderTabs();
+    renderCountry();
+    revealOnScroll();
+    window.addEventListener('scroll', revealOnScroll);
+  </script>
+</body>
+</html>
